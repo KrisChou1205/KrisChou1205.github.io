@@ -3,63 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>梦幻账单 · 稳定版</title>
+    <title>梦幻账单 · 无弹窗版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 样式同上，此处省略以节省篇幅，实际使用时请保留完整样式 */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fa; padding: 24px 16px 48px; color: #2c3e50; }
-        .container { max-width: 700px; margin: 0 auto; }
-        .header h1 { font-size: 1.8rem; font-weight: 500; color: #303133; margin-bottom: 24px; }
-        .summary-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
-        .summary-card { background: #fff; border-radius: 8px; padding: 16px 12px; flex: 1; min-width: 110px; border: 1px solid #ebeef5; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
-        .summary-label { font-size: 0.8rem; color: #909399; margin-bottom: 8px; }
-        .summary-number { font-size: 1.7rem; font-weight: 600; color: #303133; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding: 24px 16px 48px;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #303133;
+            margin-bottom: 24px;
+        }
+
+        /* 汇总卡片 */
+        .summary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .summary-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px 12px;
+            flex: 1;
+            min-width: 110px;
+            border: 1px solid #ebeef5;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .summary-label {
+            font-size: 0.8rem;
+            color: #909399;
+            margin-bottom: 8px;
+        }
+        .summary-number {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #303133;
+        }
         .profit-positive { color: #67c23a; }
         .profit-negative { color: #f56c6c; }
-        .toolbar { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .el-button { display: inline-flex; align-items: center; justify-content: center; padding: 8px 20px; border-radius: 4px; font-size: 0.85rem; font-weight: 500; cursor: pointer; background: #fff; border: 1px solid #dcdfe6; color: #606266; gap: 6px; transition: 0.1s; }
-        .el-button--primary { background: #409eff; border-color: #409eff; color: white; }
-        .button-group { display: flex; gap: 8px; }
-        .accounts-grid { display: flex; flex-direction: column; gap: 16px; }
-        .account-card { background: #fff; border-radius: 8px; border: 1px solid #ebeef5; padding: 18px; cursor: pointer; transition: 0.1s; }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .el-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: #fff;
+            border: 1px solid #dcdfe6;
+            color: #606266;
+            gap: 6px;
+            transition: 0.1s;
+        }
+        .el-button--primary {
+            background: #409eff;
+            border-color: #409eff;
+            color: white;
+        }
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 账号卡片 */
+        .accounts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .account-card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #ebeef5;
+            padding: 18px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
         .account-card:active { transform: scale(0.99); }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
-        .name-area { display: flex; align-items: center; gap: 10px; }
-        .account-name { font-size: 1.2rem; font-weight: 500; color: #303133; }
-        .school-badge { background: #f0f2f5; padding: 2px 12px; border-radius: 16px; font-size: 0.7rem; color: #606266; }
-        .card-stats { display: flex; gap: 24px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f2f5; }
-        .stat-item { flex: 1; }
-        .stat-label-sm { font-size: 0.7rem; color: #909399; }
-        .stat-number-sm { font-weight: 600; font-size: 1rem; }
-        .card-actions { display: flex; gap: 12px; }
-        .icon-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #909399; padding: 4px; border-radius: 4px; }
-        /* 模态框、条目样式等略... 为保持可读性，此处仅保留核心修复，实际输出会包含完整样式 */
-        .modal-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .modal-container { background: #fff; width: 90%; max-width: 560px; max-height: 85vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
-        .modal-header, .modal-footer { padding: 12px 20px; border-bottom: 1px solid #ebeef5; }
-        .modal-body { padding: 20px; overflow-y: auto; }
-        .close-icon { background: none; border: none; font-size: 20px; cursor: pointer; color: #909399; }
-        .el-input, .el-select { width: 100%; padding: 8px 12px; border-radius: 4px; border: 1px solid #dcdfe6; }
-        .el-tabs__header { display: flex; justify-content: space-between; border-bottom: 1px solid #e4e7ed; margin-bottom: 15px; }
-        .el-tabs__item { padding: 0 20px; height: 40px; line-height: 40px; color: #909399; cursor: pointer; }
-        .el-tabs__item.active { color: #409eff; border-bottom: 2px solid #409eff; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .name-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .account-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #303133;
+        }
+        .school-badge {
+            background: #f0f2f5;
+            padding: 2px 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            color: #606266;
+        }
+        .card-stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f2f5;
+        }
+        .stat-item {
+            flex: 1;
+        }
+        .stat-label-sm {
+            font-size: 0.7rem;
+            color: #909399;
+        }
+        .stat-number-sm {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .card-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #909399;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        .icon-btn:hover {
+            background: #f0f2f5;
+        }
+
+        /* 模态框 */
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-container {
+            background: #fff;
+            width: 90%;
+            max-width: 560px;
+            max-height: 85vh;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-header, .modal-footer {
+            padding: 12px 20px;
+            border-bottom: 1px solid #ebeef5;
+        }
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .close-icon {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #909399;
+        }
+        .el-input, .el-select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #dcdfe6;
+            font-size: 0.9rem;
+        }
+
+        /* Tab */
+        .el-tabs__header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e4e7ed;
+            margin-bottom: 15px;
+        }
+        .tabs-left {
+            display: flex;
+        }
+        .el-tabs__item {
+            padding: 0 20px;
+            height: 40px;
+            line-height: 40px;
+            color: #909399;
+            cursor: pointer;
+        }
+        .el-tabs__item.active {
+            color: #409eff;
+            border-bottom: 2px solid #409eff;
+        }
         .tab-pane { display: none; }
         .tab-pane.active { display: block; }
-        .entry-row { background: #fff; border: 1px solid #ebeef5; border-radius: 8px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .entry-left { flex: 2; display: flex; flex-direction: column; gap: 6px; }
-        .entry-desc { font-size: 0.85rem; font-weight: 500; }
-        .entry-type-badge { background: #f0f2f5; padding: 4px 10px; border-radius: 16px; font-size: 0.7rem; width: fit-content; }
-        .entry-right { display: flex; align-items: center; gap: 12px; }
-        .entry-amount { font-weight: 700; font-size: 1rem; }
+
+        /* 条目 */
+        .entry-row {
+            background: #fff;
+            border: 1px solid #ebeef5;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .entry-left {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .entry-desc {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .entry-type-badge {
+            background: #f0f2f5;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            width: fit-content;
+        }
+        .entry-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .entry-amount {
+            font-weight: 700;
+            font-size: 1rem;
+        }
         .expense-amount { color: #f56c6c; }
         .income-amount { color: #67c23a; }
-        .delete-icon-btn { background: none; border: none; font-size: 1.1rem; color: #f56c6c; cursor: pointer; padding: 6px; }
-        .add-entry-bar { display: flex; flex-wrap: wrap; gap: 8px; background: #fafbfc; padding: 12px; border-radius: 8px; margin-bottom: 16px; }
-        .empty-tip { text-align: center; color: #c0c4cc; padding: 24px; }
-        .type-list { list-style: none; }
-        .type-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ebeef5; }
-        .warning-banner { background: #fff3e0; border-left: 4px solid #e6a23c; padding: 12px; margin-bottom: 20px; border-radius: 8px; font-size: 0.8rem; color: #b75905; }
+        .delete-icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: #f56c6c;
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        .add-entry-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: #fafbfc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .add-entry-bar input, .add-entry-bar select {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #dcdfe6;
+        }
+        .empty-tip {
+            text-align: center;
+            color: #c0c4cc;
+            padding: 24px;
+        }
+        .type-list {
+            list-style: none;
+        }
+        .type-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ebeef5;
+        }
+        .warning-banner {
+            background: #fff3e0;
+            border-left: 4px solid #e6a23c;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #b75905;
+        }
     </style>
 </head>
 <body>
@@ -81,36 +347,36 @@
     </div>
     <div id="accountsList" class="accounts-grid"></div>
 </div>
+
 <script>
-    // ==================== 梦幻账单核心（兼容 iOS file:// 协议） ====================
+    // ==================== 梦幻账单核心（无备注弹窗版） ====================
     const ALL_SCHOOLS = ["大唐官府","化生寺","女儿村","方寸山","龙宫","天宫","普陀山","五庄观","阴曹地府","魔王寨","狮驼岭","盘丝洞","凌波城","神木林","无底洞","女魃墓","天机城","花果山"];
     let accounts = [];
     let INCOME_TYPES = ['梦幻币', '材料'];
     let EXPENSE_TYPES = ['角色', '点卡', '装备', '灵饰', '宝宝'];
     const STORAGE_KEY = 'DreamLedgerV11';
 
-    // 安全存储（检测 localStorage 可用性）
     let storageAvailable = false;
     try {
         const test = '__storage_test__';
         localStorage.setItem(test, test);
         localStorage.removeItem(test);
         storageAvailable = true;
-    } catch(e) { console.warn('localStorage 不可用，将使用内存存储（数据不会持久化）'); }
+    } catch(e) { console.warn('localStorage 不可用'); }
 
     function saveToLocal() {
         const data = { accounts, incomeTypes: INCOME_TYPES, expenseTypes: EXPENSE_TYPES };
         if (storageAvailable) {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) { alert('保存失败，存储空间可能已满'); }
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) { alert('保存失败'); }
         } else {
-            // 内存存储，提示用户添加到主屏幕
             if (!window._memoryBackup) window._memoryBackup = data;
-            document.getElementById('storageWarning')?.remove();
-            const warn = document.createElement('div');
-            warn.id = 'storageWarning';
-            warn.className = 'warning-banner';
-            warn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 当前浏览器环境无法永久保存数据，请点击底部分享按钮选择「添加到主屏幕」后使用，数据即可正常保存。';
-            document.querySelector('.header').after(warn);
+            if (!document.getElementById('storageWarning')) {
+                const warn = document.createElement('div');
+                warn.id = 'storageWarning';
+                warn.className = 'warning-banner';
+                warn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 当前环境无法永久保存数据，请点击底部「添加到主屏幕」后使用。';
+                document.querySelector('.header').after(warn);
+            }
         }
     }
 
@@ -146,7 +412,6 @@
     }
     function refreshUI(){ renderAccounts(); updateSummaryUI(); saveToLocal(); }
 
-    // 账号增删改（省略详细实现，保持与之前相同但增加异常保护）
     let currentEditId=null;
     function openAccountModal(id=null){
         currentEditId=id;
@@ -170,19 +435,18 @@
     }
     function deleteAccountById(id,e){ if(e)e.stopPropagation(); if(confirm('删除账号会同时删除所有收支记录，确定吗？')){ accounts=accounts.filter(a=>a.id!==id); refreshUI(); } }
 
-    // 详情弹窗（简化实现，保持功能）
     let currentDetailAccountId=null;
     function openDetailModal(accountId){
         let acc=accounts.find(a=>a.id===accountId);
         if(!acc)return;
         currentDetailAccountId=accountId;
-        let html=`<div class="modal-mask" id="detailModalRoot"><div class="modal-container"><div class="modal-header"><h3>${escapeHtml(acc.name)} · 账单详情</h3><button class="close-icon" id="closeDetailBtn">×</button></div><div class="modal-body"><div class="el-tabs"><div class="el-tabs__header"><div class="tabs-left"><div class="el-tabs__item" data-tab="expense">支出</div><div class="el-tabs__item" data-tab="income">收入</div></div><div class="type-manager" id="typeManagerPlaceholder"></div></div><div id="tab-expense" class="tab-pane"><div class="add-entry-bar"><input type="number" id="newExpenseAmount" placeholder="金额"><select id="newExpenseType"></select><button class="el-button el-button--primary el-button--small" id="addExpenseBtn"><i class="fas fa-plus"></i> 添加支出</button></div><div id="expenseListContainer"></div></div><div id="tab-income" class="tab-pane"><div class="add-entry-bar"><input type="number" id="newIncomeAmount" placeholder="金额"><select id="newIncomeType"></select><button class="el-button el-button--primary el-button--small" id="addIncomeBtn"><i class="fas fa-plus"></i> 添加收入</button></div><div id="incomeListContainer"></div></div></div></div><div class="modal-footer"><button class="el-button" id="closeDetailFooter">关闭</button></div></div></div>`;
+        let html=`<div class="modal-mask" id="detailModalRoot"><div class="modal-container"><div class="modal-header"><h3>${escapeHtml(acc.name)} · 账单详情</h3><button class="close-icon" id="closeDetailBtn">×</button></div><div class="modal-body"><div class="el-tabs"><div class="el-tabs__header"><div class="tabs-left"><div class="el-tabs__item" data-tab="expense">支出</div><div class="el-tabs__item" data-tab="income">收入</div></div><div class="type-manager" id="typeManagerPlaceholder"></div></div><div id="tab-expense" class="tab-pane"><div class="add-entry-bar"><input type="number" id="newExpenseAmount" placeholder="金额" step="0.01"><select id="newExpenseType"></select><button class="el-button el-button--primary el-button--small" id="addExpenseBtn"><i class="fas fa-plus"></i> 添加支出</button></div><div id="expenseListContainer"></div></div><div id="tab-income" class="tab-pane"><div class="add-entry-bar"><input type="number" id="newIncomeAmount" placeholder="金额" step="0.01"><select id="newIncomeType"></select><button class="el-button el-button--primary el-button--small" id="addIncomeBtn"><i class="fas fa-plus"></i> 添加收入</button></div><div id="incomeListContainer"></div></div></div></div><div class="modal-footer"><button class="el-button" id="closeDetailFooter">关闭</button></div></div></div>`;
         document.body.insertAdjacentHTML('beforeend',html);
         let modalRoot=document.getElementById('detailModalRoot');
         let closeModal=()=>modalRoot.remove();
         document.getElementById('closeDetailBtn')?.addEventListener('click',closeModal);
         document.getElementById('closeDetailFooter')?.addEventListener('click',closeModal);
-        // 管理按钮动态
+
         let mgr=document.getElementById('typeManagerPlaceholder');
         let updateMgr=()=>{
             let active=document.querySelector('.tab-pane.active')?.id;
@@ -191,7 +455,7 @@
             document.getElementById('manageExpenseBtn')?.addEventListener('click',()=>openTypeManager('expense',acc.id));
             document.getElementById('manageIncomeBtn')?.addEventListener('click',()=>openTypeManager('income',acc.id));
         };
-        // 渲染列表
+
         let renderLists=()=>{
             let expDiv=document.getElementById('expenseListContainer');
             if(expDiv){
@@ -210,19 +474,91 @@
             let inSel=document.getElementById('newIncomeType'); if(inSel) inSel.innerHTML=INCOME_TYPES.map(t=>`<option>${escapeHtml(t)}</option>`).join('');
         };
         renderLists();
-        // 添加收支
-        document.getElementById('addExpenseBtn')?.addEventListener('click',()=>{ let amt=parseFloat(document.getElementById('newExpenseAmount').value); if(isNaN(amt)||amt<=0){alert('金额需大于0');return;} let type=document.getElementById('newExpenseType').value; let desc=prompt('描述','')||'支出'; acc.expenseEntries.push({id:uuid(),amount:Math.round(amt*100)/100,description:desc,type}); refreshUI(); openDetailModal(acc.id); });
-        document.getElementById('addIncomeBtn')?.addEventListener('click',()=>{ let amt=parseFloat(document.getElementById('newIncomeAmount').value); if(isNaN(amt)||amt<=0){alert('金额需大于0');return;} let type=document.getElementById('newIncomeType').value; let desc=prompt('描述','')||'收入'; acc.incomeEntries.push({id:uuid(),amount:Math.round(amt*100)/100,description:desc,type}); refreshUI(); openDetailModal(acc.id); });
-        // tab切换
+
+        // 添加支出 - 去掉备注弹窗，直接使用默认描述“支出”
+        document.getElementById('addExpenseBtn')?.addEventListener('click',()=>{
+            let amt=parseFloat(document.getElementById('newExpenseAmount').value);
+            if(isNaN(amt)||amt<=0){ alert('金额需大于0'); return; }
+            let type=document.getElementById('newExpenseType').value;
+            acc.expenseEntries.push({ id:uuid(), amount:Math.round(amt*100)/100, description:'支出', type });
+            refreshUI(); openDetailModal(acc.id);
+        });
+        // 添加收入 - 去掉备注弹窗，直接使用默认描述“收入”
+        document.getElementById('addIncomeBtn')?.addEventListener('click',()=>{
+            let amt=parseFloat(document.getElementById('newIncomeAmount').value);
+            if(isNaN(amt)||amt<=0){ alert('金额需大于0'); return; }
+            let type=document.getElementById('newIncomeType').value;
+            acc.incomeEntries.push({ id:uuid(), amount:Math.round(amt*100)/100, description:'收入', type });
+            refreshUI(); openDetailModal(acc.id);
+        });
+
         let tabs=modalRoot.querySelectorAll('.el-tabs__item');
         let expensePane=document.getElementById('tab-expense'), incomePane=document.getElementById('tab-income');
         let setActive=(id)=>{ tabs.forEach(t=>t.classList.remove('active')); if(id==='expense'){ expensePane.classList.add('active'); incomePane.classList.remove('active'); document.querySelector('.el-tabs__item[data-tab="expense"]').classList.add('active'); }else{ incomePane.classList.add('active'); expensePane.classList.remove('active'); document.querySelector('.el-tabs__item[data-tab="income"]').classList.add('active'); } updateMgr(); };
         tabs.forEach(btn=>btn.addEventListener('click',()=>setActive(btn.getAttribute('data-tab'))));
         setActive('expense');
     }
-    function openTypeManager(kind,accId){ /* 保持与原版类似，限于篇幅略，实际能工作 */ alert('类型管理功能已内置，可以正常使用'); }
 
-    // 导入导出修复（增加错误捕获）
+    // 类型管理（简化版，保留核心功能）
+    function openTypeManager(kind,accId){
+        const isExpense = kind === 'expense';
+        let currentList = isExpense ? [...EXPENSE_TYPES] : [...INCOME_TYPES];
+        const title = isExpense ? '管理支出类型' : '管理收入类型';
+        const modalHtml = `
+            <div class="modal-mask" id="typeManagerModal">
+                <div class="modal-container" style="max-width: 400px;">
+                    <div class="modal-header"><h3>${title}</h3><button class="close-icon" id="closeTypeModal">×</button></div>
+                    <div class="modal-body">
+                        <ul class="type-list" id="typeList"></ul>
+                        <div style="display:flex; gap:8px;"><input class="el-input" id="newTypeName" placeholder="新类型"><button class="el-button el-button--primary el-button--small" id="addTypeBtn"><i class="fas fa-plus"></i> 添加</button></div>
+                    </div>
+                    <div class="modal-footer"><button class="el-button" id="closeTypeFooter">关闭</button></div>
+                </div>
+            </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = document.getElementById('typeManagerModal');
+        const close = () => modal.remove();
+        const renderTypeList = () => {
+            const ul = document.getElementById('typeList');
+            if (!ul) return;
+            ul.innerHTML = currentList.map((t, idx) => `<li><span>${escapeHtml(t)}</span><div><button class="icon-btn edit-type" data-index="${idx}"><i class="fas fa-edit"></i></button><button class="icon-btn del-type" data-index="${idx}"><i class="fas fa-trash-alt"></i></button></div></li>`).join('');
+        };
+        renderTypeList();
+        document.getElementById('addTypeBtn')?.addEventListener('click', () => {
+            const newVal = document.getElementById('newTypeName').value.trim();
+            if (newVal && !currentList.includes(newVal)) { currentList.push(newVal); renderTypeList(); document.getElementById('newTypeName').value = ''; }
+            else alert('类型重复或无效');
+        });
+        modal.querySelectorAll('.edit-type').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = btn.getAttribute('data-index');
+                const old = currentList[idx];
+                const newVal = prompt('修改类型名称', old);
+                if (newVal && newVal.trim() && !currentList.includes(newVal.trim())) currentList[idx] = newVal.trim();
+                else if (newVal) alert('类型已存在');
+                renderTypeList();
+            });
+        });
+        modal.querySelectorAll('.del-type').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (currentList.length <= 1) { alert('至少保留一个类型'); return; }
+                const idx = btn.getAttribute('data-index');
+                currentList.splice(idx, 1);
+                renderTypeList();
+            });
+        });
+        const saveAndClose = () => {
+            if (isExpense) EXPENSE_TYPES = [...currentList];
+            else INCOME_TYPES = [...currentList];
+            saveToLocal();
+            close();
+            if (currentDetailAccountId) openDetailModal(currentDetailAccountId);
+            else refreshUI();
+        };
+        document.getElementById('closeTypeModal')?.addEventListener('click', saveAndClose);
+        document.getElementById('closeTypeFooter')?.addEventListener('click', saveAndClose);
+    }
+
     function exportData(){ let data={accounts,incomeTypes:INCOME_TYPES,expenseTypes:EXPENSE_TYPES}; let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); a.download=`dream_bill_${new Date().toISOString().slice(0,19)}.json`; a.click(); URL.revokeObjectURL(a.href); }
     function importData(file){ let r=new FileReader(); r.onload=e=>{ try{ let d=JSON.parse(e.target.result); if(d.accounts!==undefined) accounts=d.accounts; if(d.incomeTypes) INCOME_TYPES=d.incomeTypes; if(d.expenseTypes) EXPENSE_TYPES=d.expenseTypes; refreshUI(); alert('导入成功'); }catch(err){ alert('文件格式错误'); } }; r.readAsText(file); }
 
